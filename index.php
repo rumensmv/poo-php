@@ -5,6 +5,27 @@ declare(strict_types=1);
 class Player
 {
     public int $level;
+
+    //constructeur
+    public function __construct(int $level)
+    {
+        $this->setLevel($level);
+    }
+
+    //accesseur
+    public function getLevel():int
+    {
+        return $this->level;
+    }
+
+    //mutateur
+    public function setLevel(int $level):void
+    {
+        if($level < 0 ){
+            trigger_error('Le niveau ne peut pas être négatif.', E_USER_ERROR);
+        }
+        $this->level = $level;
+    }
 }
 
 class Encounter
