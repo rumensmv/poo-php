@@ -1,9 +1,6 @@
 <?php
 
-const RESULT_WINNER = 1;
-const RESULT_LOSER = -1;
-const RESULT_DRAW = 0;
-const RESULT_POSSIBILITIES = [RESULT_WINNER, RESULT_LOSER, RESULT_DRAW];
+declare(strict_types=1);
 
 class Player
 {
@@ -12,20 +9,37 @@ class Player
 
 class Encounter
 {
-    function probabilityAgainst(int $levelPlayerOne, int $againstLevelPlayerTwo)
+    public const RESULT_WINNER = 1;
+    public const RESULT_LOSER = -1;
+    public const RESULT_DRAW = 0;
+    public const RESULT_POSSIBILITIES = [
+        self::RESULT_WINNER,
+        self::RESULT_LOSER,
+        self::RESULT_DRAW
+    ];
+
+
+    public static function probabilityAgainst(int $levelPlayerOne, int $againstLevelPlayerTwo)
     {
         return 1/(1+(10 ** (($againstLevelPlayerTwo - $levelPlayerOne)/400)));
     }
 
-    function setNewLevel(int &$levelPlayerOne, int $againstLevelPlayerTwo, int $playerOneResult)
+    public static function setNewLevel(int &$levelPlayerOne, int $againstLevelPlayerTwo, int $playerOneResult)
     {
-        if (!in_array($playerOneResult, RESULT_POSSIBILITIES)) {
-            trigger_error(sprintf('Invalid result. Expected %s',implode(' or ', RESULT_POSSIBILITIES)));
+        if (!in_array($playerOneResult, self::RESULT_POSSIBILITIES)) {
+            trigger_error(sprintf(
+                'Invalid result. Expected %s',
+                implode(' or ', RESULT_POSSIBILITIES)
+            ));
         }
-        $levelPlayerOne += (int) (32 * ($playerOneResult - probabilityAgainst($levelPlayerOne, $againstLevelPlayerTwo)));
+        $levelPlayerOne += (int) (32 * ($playerOneResult - self::probabilityAgainst($levelPlayerOne, $againstLevelPlayerTwo)));
     }
     
 }
+const RESULT_WINNER = 1;
+const RESULT_LOSER = -1;
+const RESULT_DRAW = 0;
+const RESULT_POSSIBILITIES = [RESULT_WINNER, RESULT_LOSER, RESULT_DRAW];
 
 function probabilityAgainst(int $levelPlayerOne, int $againstLevelPlayerTwo)
 {
