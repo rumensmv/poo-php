@@ -11,40 +11,13 @@
 
 declare(strict_types=1);
 
-class Lobby
+abstract class Player
 {
-    /** @var array<QueuingPlayer> */
-    public array $queuingPlayers = [];
+    protected float $ratio = 400.0;
 
-    public function findOponents(QueuingPlayer $player): array
+    public function __construct(protected string $name, float $ratio = 400.0)
     {
-        $minLevel = round($player->getRatio() / 100);
-        $maxLevel = $minLevel + $player->getRange();
-
-        return array_filter($this->queuingPlayers, static function (QueuingPlayer $potentialOponent) use ($minLevel, $maxLevel, $player) {
-            $playerLevel = round($potentialOponent->getRatio() / 100);
-
-            return $player !== $potentialOponent && ($minLevel <= $playerLevel) && ($playerLevel <= $maxLevel);
-        });
-    }
-
-    public function addPlayer(Player $player): void
-    {
-        $this->queuingPlayers[] = new QueuingPlayer($player);
-    }
-
-    public function addPlayers(Player ...$players): void
-    {
-        foreach ($players as $player) {
-            $this->addPlayer($player);
-        }
-    }
-}
-
-class Player
-{
-    public function __construct(protected string $name, protected float $ratio = 400.0)
-    {
+        $this->ratio = $ratio;
     }
 
     public function getName(): string
@@ -52,7 +25,12 @@ class Player
         return $this->name;
     }
 
-    private function probabilityAgainst(self $player): float
+    public function getRatio(): float
+    {
+        return $this->ratio;
+    }
+
+    protected function probabilityAgainst(self $player): float
     {
         return 1 / (1 + (10 ** (($player->getRatio() - $this->getRatio()) / 400)));
     }
@@ -61,22 +39,7 @@ class Player
     {
         $this->ratio += 32 * ($result - $this->probabilityAgainst($player));
     }
-
-    public function getRatio(): float
-    {
-        return $this->ratio;
-    }
 }
-
-$greg = new Player('greg', 400);
-$jade = new Player('jade', 476);
-
-$lobby = new Lobby();
-$lobby->addPlayers($greg, $jade);
-
-var_dump($lobby->findOponents($lobby->queuingPlayers[0]));
-
-exit(0);
 
 class QueuingPlayer extends Player
 {
@@ -96,3 +59,44 @@ class QueuingPlayer extends Player
     }
 
 }
+
+
+class Lobby
+{
+    /** @var array<QueuingPlayer> */
+    public array $queuingPlayers = [];
+
+    public function addPlayer(Player $player): void
+    {
+        $this->queuingPlayers[] = new QueuingPlayer($player);
+    }
+
+    public function addPlayers(Player ...$players): void
+    {
+        foreach ($players as $player) {
+            $this->addPlayer($player);
+        }
+    }
+
+    public function findOponents(QueuingPlayer $player): array
+    {
+        $minLevel = round($player->getRatio() / 100);
+        $maxLevel = $minLevel + $player->getRange();
+
+        return array_filter($this->queuingPlayers, static function (QueuingPlayer $potentialOponent) use ($minLevel, $maxLevel, $player) {
+            $playerLevel = round($potentialOponent->getRatio() / 100);
+
+            return $player !== $potentialOponent && ($minLevel <= $playerLevel) && ($playerLevel <= $maxLevel);
+        });
+    }
+}
+
+class ConcretePlayer extends Player{}
+
+$greg = new ConcretePlayer("greg", 400);
+$jade = new ConcretePlayer('jade', 476);
+
+$lobby = new Lobby();
+$lobby->addPlayers($greg, $jade);
+
+var_dump($lobby->findOponents($lobby->queuingPlayers[0]));
