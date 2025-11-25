@@ -41,7 +41,7 @@ abstract class Player
     }
 }
 
-class QueuingPlayer extends Player
+final class QueuingPlayer extends Player
 {
     protected int $range;
     public function __construct(Player $player, int $range = 1)
@@ -57,9 +57,20 @@ class QueuingPlayer extends Player
     {
         $this->range = $range;
     }
-
 }
 
+class BlitzPlayer extends Player 
+{
+    public function __construct(string $name)
+    {
+        parent::__construct($name, 1200);
+    }
+
+    public function updateRatioAgainst(Player $player, int $result): void 
+    {
+        $this->ratio += 32 * 4 * ($result - $this->probabilityAgainst($player));
+    }
+}
 
 class Lobby
 {
@@ -91,10 +102,9 @@ class Lobby
     }
 }
 
-class ConcretePlayer extends Player{}
 
-$greg = new ConcretePlayer("greg", 400);
-$jade = new ConcretePlayer('jade', 476);
+$greg = new BlitzPlayer("Greg");
+$jade = new BlitzPlayer("Jade");
 
 $lobby = new Lobby();
 $lobby->addPlayers($greg, $jade);
