@@ -6,6 +6,7 @@ namespace App\MatchMaker\Lobby;
 use App\MatchMaker\Player\PlayerInterface;
 use App\MatchMaker\Player\QueuingPlayerInterface;
 use App\MatchMaker\Player\QueuingPlayer;
+use App\MatchMaker\Exceptions\PlayerNotFoundException;
 
 
 class Lobby implements LobbyInterface
@@ -15,6 +16,10 @@ class Lobby implements LobbyInterface
 
     public function findOponents(QueuingPlayerInterface $player): array
     {
+        if (!in_array($player, $this->queuingPlayers, true)) {
+            throw new PlayerNotFoundException();
+        }
+
         $minLevel = round($player->getRatio() / 100);
         $maxLevel = $minLevel + $player->getRange();
 

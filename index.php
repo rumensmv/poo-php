@@ -18,15 +18,23 @@ spl_autoload_register(static function(string $fqcn) {
     }
 });
 
-use App\MatchMaker\Lobby\Lobby;
 use App\MatchMaker\Player\BlitzPlayer;
+use App\MatchMaker\Lobby\Lobby;
+use App\MatchMaker\Player\QueuingPlayer;
+use App\MatchMaker\Exceptions\PlayerNotFoundException;
 
+$lobby = new Lobby();
 $greg = new BlitzPlayer('greg');
 $jade = new BlitzPlayer('jade');
 
-$lobby = new Lobby();
-$lobby->addPlayers($greg, $jade);
+$lobby->queuingPlayers[] = new QueuingPlayer($greg);
+$lobby->queuingPlayers[] = new QueuingPlayer($jade);
 
-var_dump($lobby->findOponents($lobby->queuingPlayers[0]));
-
-
+try {
+    $opponents = $lobby->findOponents($lobby->queuingPlayers[0]);
+    var_dump($opponents);
+} catch (PlayerNotFoundException $e) {
+    echo $e->message;
+} catch (\Exception $e) {
+    echo 'Une erreur inattendue est survenue : ' . $e->getMessage();
+}
