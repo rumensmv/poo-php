@@ -12,12 +12,14 @@
 declare(strict_types=1);
 
 spl_autoload_register(static function(string $fqcn) {
-    $path = str_replace('\\', '/', $fqcn) . '.php';
-    require_once $path;
-}); 
+    $path = __DIR__ . '/' . str_replace('\\', '/', $fqcn) . '.php';
+    if (file_exists($path)) {
+        require_once $path;
+    }
+});
 
-use App\MatchMaker\Lobby;
-use App\MatchMaker\BlitzPlayer;
+use App\MatchMaker\Lobby\Lobby;
+use App\MatchMaker\Player\BlitzPlayer;
 
 $greg = new BlitzPlayer('greg');
 $jade = new BlitzPlayer('jade');

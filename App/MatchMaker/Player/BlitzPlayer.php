@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\MatchMaker;
+namespace App\MatchMaker\Player;
 
 class BlitzPlayer extends Player
 {

@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\MatchMaker;
+namespace App\MatchMaker\Player;
 
-class Player extends AbstractPlayer
+class Player extends AbstractPlayer implements PlayerInterface
 {
     public function getName(): string
     {
@@ -12,7 +12,7 @@ class Player extends AbstractPlayer
 
     protected function probabilityAgainst(AbstractPlayer $player): float
     {
-        return 1 / (1 + (10 ** (($player->getRatio() - $this->getRatio()) / 400)));
+        return 1 / (1 + (10 ** (($player->getRatio() - $this->ratio) / 400)));
     }
 
     public function updateRatioAgainst(AbstractPlayer $player, int $result): void
